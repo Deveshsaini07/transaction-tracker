@@ -1,19 +1,25 @@
 import type { AuthRequest } from "../middlewares/auth.js";
 import { PrismaClient } from "@prisma/client";
 import type { Response } from "express";
-import jwt from "jsonwebtoken";
+import {z} from 'zod'
 
 const prisma = new PrismaClient();
 
-// interface InputSchema{
-//     otherName:string,
-//     amount:number,
-//     credited:boolean,
-//     upiId:string
-// }
+const inputSchema = z.object({
+    username:z.string().min(1),
+    password:z.string().min(1),
+    balance:z.number()
+})
 
 export async function signUp(req:AuthRequest,res:Response){
     try {
+        const check = inputSchema.safeParse(req.body);
+        if(check.success == false){
+            res.status(400).json({
+                msg:"invalid inputs(username,password,balance)"
+            });
+            return;
+        }
         const {username,password,balance} = req.body;
         const data = await prisma.user.create({
             data:{

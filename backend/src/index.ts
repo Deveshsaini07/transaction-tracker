@@ -6,7 +6,6 @@ import cors from 'cors';
 const app= express();
 
 app.use(express.json());
-app.use('/api/v1',router);
 app.use(cookieParser());
 app.use(
   cors({
@@ -14,6 +13,7 @@ app.use(
     credentials: true, // allow cookies
   })
 );
+app.use('/api/v1',router);
 
 
 app.listen(3000,()=>{
